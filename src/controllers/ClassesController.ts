@@ -86,7 +86,6 @@ export default class ClassesController {
       return res.status(201).json({ success: true });
     } catch (error) {
       await trx.rollback();
-
       return res.status(400).json({
         success: false,
         error: 'Unexpected error'
