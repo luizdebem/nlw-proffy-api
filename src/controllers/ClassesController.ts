@@ -16,6 +16,19 @@ export default class ClassesController {
     const subject = filters.subject as string;
     const time = filters.time as string;
 
+    if (!week_day && !subject && !time) {
+      const classes = await db('classes')
+        .whereExists(function () {
+          this.select('class_schedule.*')
+            .from('class_schedule')
+            .whereRaw('`class_schedule`.`class_id` = `classes`.`id`')
+        })
+        .join('users', 'classes.user_id', '=', 'users.id')
+        .select(['classes.*', 'users.*']);
+
+      return res.status(200).json(classes);
+    }
+
     if (!week_day || !subject || !time) {
       return res.status(400).json({ success: false, error: 'All filters are required.' });
     }
